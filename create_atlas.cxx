@@ -46,7 +46,10 @@
 
 using namespace std;
 
-
+/*
+*	Read list of files from a text file
+*	These should be VTK files and listed in the file as a new line 
+*/
 bool ReadFileNames(const char* fn, vector<string>& filename_list)
 {
 	ifstream infile(fn); 
@@ -103,6 +106,10 @@ void PrepareScalarContainer(string first_file, vector<vector< double> >& scalar_
 
 }
 
+
+/*
+* Populates a container that stores scalars from a mesh vertex 
+*/
 void InsertIntoContainer(string poly_data_fn, vector<vector< double> >& scalar_container)
 {
 	vtkSmartPointer<vtkPolyDataReader> reader1 = vtkSmartPointer<vtkPolyDataReader>::New();
@@ -125,7 +132,9 @@ void InsertIntoContainer(string poly_data_fn, vector<vector< double> >& scalar_c
 }
 
 // See Answer to https://stackoverflow.com/questions/2114797/compute-median-of-values-stored-in-vector-c
-
+/*
+* Calculates Median from a list of values
+*/
 double CalcMedian(vector<double> scores)
 {
 	double median;
@@ -145,6 +154,9 @@ double CalcMedian(vector<double> scores)
 	return median;
 }
 
+/*
+* Calculates Mean from a list of values 
+*/
 double CalcMean(vector<double> scores)
 {
 	double sum = 0; double n = 0; 
@@ -157,6 +169,9 @@ double CalcMean(vector<double> scores)
 	return sum / n; 
 }
 
+/*
+* This creates the final atlas 
+*/
 void CreateFinalAtlas(string first_file, const char* output_file, vector<vector< double> >& scalar_container, int mean_or_median)
 {
 	vtkSmartPointer<vtkPolyDataReader> reader1 = vtkSmartPointer<vtkPolyDataReader>::New();
@@ -198,72 +213,6 @@ void CreateFinalAtlas(string first_file, const char* output_file, vector<vector<
 
 }
 
-
-void Get_Mean(char* source_poly_fn, char* target_poly_fn, char* output_poly_fn) 
-{
-    
-  double target_scalar, source_scalar, mean_scalar;
-
-  vtkSmartPointer<vtkPolyData> source_poly =vtkSmartPointer<vtkPolyData>::New();
-  vtkSmartPointer<vtkPolyData> target_poly =vtkSmartPointer<vtkPolyData>::New();  
-  
-  // to search for closest point on polyWithColors for transfering the colors from that shell 
-    
-  vtkSmartPointer<vtkPolyDataReader> reader1 = vtkSmartPointer<vtkPolyDataReader>::New(); 
-  reader1->SetFileName(source_poly_fn); 
-  reader1->Update();
-  source_poly = reader1->GetOutput();
-
-  vtkSmartPointer<vtkPolyDataReader> reader2 = vtkSmartPointer<vtkPolyDataReader>::New(); 
-  reader2->SetFileName(target_poly_fn); 
-  reader2->Update();
-  target_poly = reader2->GetOutput();
-
-
-  vtkSmartPointer<vtkFloatArray> mean_scalars = vtkSmartPointer<vtkFloatArray>::New();
-  for (vtkIdType i = 0; i < target_poly->GetNumberOfPoints(); ++i) {
-       mean_scalars->InsertNextTuple1(0);  
-  }
-
-   vtkSmartPointer<vtkFloatArray> target_scalars = vtkSmartPointer<vtkFloatArray>::New();
-    target_scalars = vtkFloatArray::SafeDownCast(target_poly->GetPointData()->GetScalars());
-
-   vtkSmartPointer<vtkFloatArray> source_scalars = vtkSmartPointer<vtkFloatArray>::New();
-    source_scalars = vtkFloatArray::SafeDownCast(source_poly->GetPointData()->GetScalars());
-    
-
-    // iterating through each point in source to find closest target point hit  
-    for (vtkIdType i = 0; i < source_poly->GetNumberOfPoints(); ++i) {
-
-        mean_scalar = 0;
-        source_scalar = source_scalars->GetTuple1(i);
-        target_scalar = target_scalars->GetTuple1(i);
-
-        if (source_scalar > 0 && target_scalar > 0)
-        {
-            mean_scalar = (source_scalar+target_scalar) / 2; 
-        }
-        else if (source_scalar ==0)         // we assume 0 to be no data 
-        {
-            mean_scalar = target_scalar; 
-        }
-        else if (target_scalar == 0)       // we assume 0 to be no data
-        {
-            mean_scalar = source_scalar;
-        }
-        
-        mean_scalars->SetTuple1(i, mean_scalar);
-
-    }
-
-    target_poly->GetPointData()->SetScalars(mean_scalars);
-
-    vtkSmartPointer<vtkPolyDataWriter> writer = vtkSmartPointer<vtkPolyDataWriter>::New();
-    writer->SetInputData(target_poly);
-    writer->SetFileName(output_poly_fn);
-    writer->Update();
-
-}
 
 
 
