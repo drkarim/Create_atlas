@@ -70,7 +70,7 @@ bool ReadFileNames(const char* fn, vector<string>& filename_list)
 	return true; 
 }
 
-void PrepareScalarContainer(string first_file, vector<vector< double>>& scalar_container)
+void PrepareScalarContainer(string first_file, vector<vector< double> >& scalar_container)
 {
 	cout << "\nPreparing container structure with first file specified in list " << first_file << endl;
 	vtkSmartPointer<vtkPolyDataReader> reader1 = vtkSmartPointer<vtkPolyDataReader>::New();
@@ -103,7 +103,7 @@ void PrepareScalarContainer(string first_file, vector<vector< double>>& scalar_c
 
 }
 
-void InsertIntoContainer(string poly_data_fn, vector<vector< double>>& scalar_container)
+void InsertIntoContainer(string poly_data_fn, vector<vector< double> >& scalar_container)
 {
 	vtkSmartPointer<vtkPolyDataReader> reader1 = vtkSmartPointer<vtkPolyDataReader>::New();
 	reader1->SetFileName(poly_data_fn.c_str());
@@ -157,7 +157,7 @@ double CalcMean(vector<double> scores)
 	return sum / n; 
 }
 
-void CreateFinalAtlas(string first_file, const char* output_file, vector<vector< double>>& scalar_container, int mean_or_median)
+void CreateFinalAtlas(string first_file, const char* output_file, vector<vector< double> >& scalar_container, int mean_or_median)
 {
 	vtkSmartPointer<vtkPolyDataReader> reader1 = vtkSmartPointer<vtkPolyDataReader>::New();
 	reader1->SetFileName(first_file.c_str());
